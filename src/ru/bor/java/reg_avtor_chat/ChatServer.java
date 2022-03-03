@@ -23,6 +23,7 @@ public class ChatServer{
 	WindowServer windowServer = new WindowServer();
 	SetupNetworkServer sNR = new SetupNetworkServer();
 	MessagesForLan inputText = null;
+	ArrayList<SetupNetworkServer> allClients = new ArrayList<SetupNetworkServer>();
 
 	public void startServer(){
 		Thread forWindow = new Thread (new ForWindow());
