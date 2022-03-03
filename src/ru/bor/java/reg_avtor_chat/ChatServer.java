@@ -30,6 +30,7 @@ public class ChatServer{
 		Thread forNet = new Thread(new ForNet());
 		forWindow.start();
 		forNet.start();
+		System.out.println("Old version");
 	}
 
 	public class ForWindow implements Runnable {
