@@ -21,7 +21,7 @@ import ru.bor.java.window.WindowServer;
 public class ChatServer{
 
 	WindowServer windowServer = new WindowServer();
-	SetupNetworkServer sNR = new SetupNetworkServer();
+	//SetupNetworkServer sNR = new SetupNetworkServer();
 	MessagesForLan inputText = null;
 	ArrayList<SetupNetworkServer> allClients = new ArrayList<SetupNetworkServer>();
 
@@ -30,7 +30,6 @@ public class ChatServer{
 		Thread forNet = new Thread(new ForNet());
 		forWindow.start();
 		forNet.start();
-		System.out.println("Old version");
 	}
 
 	public class ForWindow implements Runnable {
@@ -44,11 +43,11 @@ public class ChatServer{
 	public class ForNet implements Runnable {
 		@Override
 		public void run() {
-			sNR.setupNetwork();
-			//Thread addClient = new Thread(new AddClient());
+			//sNR.setupNetwork();
+			Thread addClient = new Thread(new AddClient());
 			Thread listenFromClient = new Thread(new ListenFromClient());
 			Thread sendToClient = new Thread(new SendToClient());
-			//addClient.start();
+			addClient.start();
 			listenFromClient.start();
 			sendToClient.start();
 		}
@@ -59,19 +58,23 @@ public class ChatServer{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			MessageSuperTextMessage messageFromAdmin = new MessageSuperTextMessage("@003TextMessage", "Admin", windowServer.getMessageText());
-			messageFromAdmin.playMessage(sNR.getWriter(), windowServer);
+			//messageFromAdmin.playMessage(sNR.getWriter(), windowServer);
 			windowServer.getMessageField().setText("");
 		}
 	}
 
-    /*public class AddClient implements Runnable {
+    public class AddClient implements Runnable {
         @Override
         public void run() {
+            SetupNetworkServer sNS = new SetupNetworkServer();
+
             while (true) {
-                sNR.setupNetwork();
+                System.out.println("Ожидание связи");
+                sNS.setupNetwork();
+                allClients.add(sNS);
             }
         }
-    }*/
+    }
     
 	public class SendToClient implements Runnable {
 		@Override
@@ -87,11 +90,15 @@ public class ChatServer{
         @Override
         public void run() {
             while (true) {
-                    MessagesForLan message = sNR.listenFromClient();
-                    message.printMessage();
-                    DispatcherOfMessages dispatcher = new DispatcherOfMessages(message);
-                    MessageSuper messageSuper = dispatcher.initMessage();
-                    messageSuper.playMessage(sNR.getWriter(), windowServer);
+            	if(!allClients.isEmpty()){
+            		for(SetupNetworkServer sNS:allClients) {
+						MessagesForLan message = sNS.listenFromClient();
+						message.printMessage();
+						DispatcherOfMessages dispatcher = new DispatcherOfMessages(message);
+						MessageSuper messageSuper = dispatcher.initMessage();
+						messageSuper.playMessage(sNS.getWriter(), windowServer);
+					}
+				}
             }
         }
     }
