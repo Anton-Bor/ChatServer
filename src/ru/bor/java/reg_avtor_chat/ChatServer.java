@@ -69,7 +69,7 @@ public class ChatServer{
             SetupNetworkServer sNS = new SetupNetworkServer();
 
             while (true) {
-                System.out.println("Ожидание связи");
+                //System.out.println("Ожидание связи");
                 sNS.setupNetwork();
                 allClients.add(sNS);
             }
